@@ -12,6 +12,8 @@ export interface LMStudioChatSettings {
 	apiPort: number;
 	/** Model identifier as LM Studio reports it, e.g. "google/gemma-4-e4b" */
 	model: string;
+	/** Display name shown on user message bubbles, e.g. "You" */
+	userDisplayName: string;
 	/** Optional system prompt prepended to every thread */
 	systemPrompt: string;
 	/** Sampling temperature (0 = deterministic, 1 = creative) */
@@ -22,6 +24,7 @@ export const DEFAULT_SETTINGS: LMStudioChatSettings = {
 	apiBaseUrl: 'http://127.0.0.1',
 	apiPort: 1234,
 	model: 'google/gemma-4-e4b',
+	userDisplayName: 'You',
 	systemPrompt: 'You are a helpful assistant.',
 	temperature: 0.7,
 };
@@ -48,7 +51,7 @@ export class LMStudioChatSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.apiBaseUrl)
 					.onChange(async (value) => {
 						this.plugin.settings.apiBaseUrl = value;
-						await this.plugin.saveSettings();
+						await this.plugin.savePluginData();
 					}),
 			);
 
@@ -63,7 +66,7 @@ export class LMStudioChatSettingTab extends PluginSettingTab {
 						const port = Number(value);
 						if (!Number.isNaN(port)) {
 							this.plugin.settings.apiPort = port;
-							await this.plugin.saveSettings();
+							await this.plugin.savePluginData();
 						}
 					}),
 			);
@@ -78,11 +81,24 @@ export class LMStudioChatSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.model)
 					.onChange(async (value) => {
 						this.plugin.settings.model = value;
-						await this.plugin.saveSettings();
+						await this.plugin.savePluginData();
 					}),
 			);
 
 		// --- Behavior ---
+		new Setting(containerEl)
+			.setName('Your display name')
+			.setDesc('Label shown on your message bubbles. Defaults to "You".')
+			.addText((text) =>
+				text
+					.setPlaceholder('You')
+					.setValue(this.plugin.settings.userDisplayName)
+					.onChange(async (value) => {
+						this.plugin.settings.userDisplayName = value;
+						await this.plugin.savePluginData();
+					}),
+			);
+
 		new Setting(containerEl)
 			.setName('System prompt')
 			.setDesc('Prepended to every new thread.')
@@ -92,7 +108,7 @@ export class LMStudioChatSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.systemPrompt)
 					.onChange(async (value) => {
 						this.plugin.settings.systemPrompt = value;
-						await this.plugin.saveSettings();
+						await this.plugin.savePluginData();
 					});
 				text.inputEl.rows = 3;
 				text.inputEl.cols = 30;
@@ -109,7 +125,7 @@ export class LMStudioChatSettingTab extends PluginSettingTab {
 						const temp = Number(value);
 						if (!Number.isNaN(temp)) {
 							this.plugin.settings.temperature = temp;
-							await this.plugin.saveSettings();
+							await this.plugin.savePluginData();
 						}
 					}),
 			);
