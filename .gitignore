@@ -25,6 +25,9 @@ data.json
 # Each developer creates their own; never commit it.
 dev-config.json
 
+# Local staging folder for assembling GitHub Release uploads.
+release-staging/
+
 # TEMPORARY: GitHub Actions workflows excluded from pushes until the
 # developer's GitHub token has the `workflow` scope. Remove this block
 # and `git add .github` once the token scope is added.
